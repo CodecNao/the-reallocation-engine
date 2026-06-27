@@ -6,7 +6,36 @@ Use this file to record what was run, what worked, what failed, and what should
 be tested next. Keep entries short. Do not include secrets, real phone numbers,
 private emails, or sensitive application notes.
 
-## 2026-06-12 — Wrote Tutorial 00 (Exercise Zero) in full
+## 2026-06-26 — Setup Exercise (INFO 7375): personal layer built and attested
+
+- **Recipe:** manual — Setup Exercise — Your Search's Personal Layer (Course: INFO 7375)
+- **Inputs:** `Mercury-CV-GoogleSAP.pdf` (read locally, never copied verbatim into a tracked file); profile-intake answers given live; assignment text (Steps 0–5 + verification check).
+- **Outputs:**
+  - `search/resume.json` — attested past: 2 education rows, 2 work rows, 1 in-progress project, skills block, `attested: true` with date and a three-error attestation note.
+  - `search/profile.yml` — target role, F-1/CPT-now → OPT-expected timeline (anticipated dates, not EAD-issued), Bay Area geography, sector preferences with hard exclusions, sponsorship `required: true` + `gate_behavior: skip-regardless`.
+  - `search/gaps.md` — 4 active gap rows (Kubernetes ops, cloud-provider production work, IaC/Terraform, on-call) + 1 killed row (Go) + row-1 rewritten in personal voice.
+  - `.gitignore` — added `!search/resume.json` to override the repo-wide `resume.json` rule; added `search/private-notes.md` to keep honest self-assessments out of git.
+- **Result — built (Step 5 required bullets):**
+  - **What was built:** the three files above (`resume.json`, `profile.yml`, `gaps.md`) plus the `.gitignore` change; `search/private-notes.md` deliberately not committed.
+  - **Three attestation errors caught in `resume.json`:**
+    1. PaddleOCR — agent imported the resume's "Achievements (Expected)" bullets as actual achievements; reclassified under `expected_outcomes` with `status: not yet measured`. The ≥2x speedup is a target driving the work, not a result.
+    2. SAP — agent imported "Unified cross-platform workflows across Windows and Linux" as written; only Linux work appears in the responsibilities. Scope narrowed to Linux; the Windows claim had no supporting bullet.
+    3. Duplicate ~30% claim — both SAP and Eth Tech entries arrived with the same round figure for deployment-time improvement. Round-number collision is a fluency artifact, not a measurement. Both flagged `measurement_verified: false` until the source benchmark is recovered.
+  - **Top gap from `gaps.md`:** Production Kubernetes / container-orchestration ops at the cluster-ops level (not just Dockerfile authorship). Three target-sector postings (Google SRE, SAP BTP SRE, AWS Platform) all list it as a required, not preferred, skill.
+  - **Killed row and why:** "Production Go programming" — the agent's draft listed Go as a hard gap because "Google" appeared in the target metro and the model pattern-matched "Google SRE" → Go. Actual Google SRE postings accept "Python, Java, C++, Go, or equivalent"; SAP BTP is JVM/ABAP-heavy; AWS is mostly Python/Java. With Python + ABAP + TypeScript already attested, Go is one path, not a gate. The row was fluency dressing as evidence — exactly the failure mode the course exists to catch.
+  - **Field in `profile.yml` corrected from agent's first draft:** `visa_and_timeline.stem_eligible` — agent's first pass set it to `yes` because MIS at NEU is "commonly STEM." Corrected to `value: uncertain` with `action_owed: email DSO to confirm CIP code before treating STEM as available`. Following the assignment's explicit warning: a wrong STEM gate produces Apply recommendations for roles that cannot legally be taken.
+- **Result — verification check (Step 4 answers):**
+  - **`resume.json`** — every job entry has a `verifiable_by` field naming a non-self source (offer letter, transcript, manager reference, public GitHub history). No title was promoted past the resume's wording; no date was shifted from the resume. The CUDA skill from NEU coursework is filed under `coursework_only_not_yet_production` precisely so it does not pose as a shipped skill.
+  - **`profile.yml`** — the visa block describes the issued-status (F-1 + CPT used at SAP) plus anticipated OPT dates derived from graduation timing, marked anticipated and not from an EAD. STEM eligibility is `uncertain` per assignment guidance (DSO confirmation owed). No date asserts an authorization that has not been issued.
+  - **`gaps.md`** — every active row cites an O*NET skill level (SOC 15-1244.00, 15-1252.00) or a three-posting pattern in the target sector, plus a closing condition someone other than me can verify (merged PR, cert ID, published postmortem). Row 1 carries a `TODO collect 3 specific job-board URLs` flag so that the posting-pattern claim is anchored to specific links before the engine scores against it. No row sources its demand signal to model intuition.
+- **Open issues:**
+  - Row 1 of `gaps.md` still needs 3 specific posting URLs attached before the engine runs against it; the pattern claim is currently grounded in the role-category description, not in URL-anchored postings.
+  - OPT dates in `profile.yml` are anticipated, not issued. Re-attest the `visa_and_timeline.opt` block when the EAD is in hand.
+  - STEM-eligibility marked uncertain pending DSO confirmation. Re-attest after the DSO emails back.
+  - `package-lock.json` and other repo tooling not exercised by this exercise; conformance not re-run.
+  - `search/private-notes.md` was not created in this commit (no honest self-assessment captured here); intentionally left for the human to add separately so its contents never enter agent context.
+
+
 
 - **Recipe:** manual
 - **Inputs:** `docs/search-profile-design.md` v3, `data/bls/compact/soc_occupation_compact.csv` schema, MYCROFT.md attestation rules

@@ -67,3 +67,9 @@ data/BLS/db_30_2_mysql/
 **/*.resume.pdf
 **/resume.pdf
 resume.json
+
+# Setup Exercise — Your Search's Personal Layer (INFO 7375)
+# search/ is the attested personal layer; resume.json/profile.yml/gaps.md are
+# tracked. private-notes.md stays out (honest self-assessments live there).
+!search/resume.json
+search/private-notes.md

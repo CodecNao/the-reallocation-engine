@@ -1,0 +1,97 @@
+# search/profile.yml
+# Personal layer for the Reallocation Engine.
+# Source of truth for what the scorer treats as constraints. Edit the
+# *attested* facts only; do not soften constraints into aspirations.
+#
+# Attested: Mercury (Zhenhao Ma) — 2026-06-26
+# Pair file: search/resume.json (attested past) · search/gaps.md (delta to target)
+
+target_role:
+  # Q1 — one sentence the sponsorship scorer + fit score can both use.
+  statement: >-
+    Cloud / Platform / DevOps engineer at a public, sponsorship-friendly
+    enterprise-software company (SAP, Google, Microsoft, Amazon tier),
+    building deployment, release, observability, or SRE-adjacent platform
+    work — extension of the SAP S/4HANA Life Cycle Management internship.
+  seniority: new-grad / L3-L4 equivalent
+  evidence_grounding:
+    - SAP LCM internship (deployment automation, ABAP, HANA, Linux)
+    - Eth Tech full-stack + DevOps (Docker, Fly.io, GitHub Actions, RabbitMQ, Redis, Elasticsearch)
+  soc_candidates:
+    # Plausible O*NET SOC codes for the scorer to confirm; not asserted.
+    - "15-1252.00 Software Developers"
+    - "15-1244.00 Network and Computer Systems Administrators"
+    - "15-1241.00 Computer Network Architects"
+    - status: human_confirm_before_scorer_uses
+
+visa_and_timeline:
+  # Q2 — facts, not hopes.
+  status_now: F-1 student (M2 at Northeastern, graduating 2026-08-expected)
+  cpt_used: true   # SAP internship 2025-05 to 2025-11 ran on CPT
+  opt:
+    started: false           # not yet — pending graduation
+    expected_start: "2026-09 (anticipated, post-graduation, exact I-20 date TBC)"
+    expected_end:   "2027-09 (1-year standard OPT before any STEM extension)"
+    note: |
+      Dates are anticipated from graduation timing, NOT from an issued EAD card.
+      Re-attest this block once the EAD is issued; do not let the scorer treat
+      the dates as hard before then.
+  unemployment_days_used: 0
+  unemployment_buffer_target_days: 80   # course recommendation, 90-day ceiling minus 10
+  stem_eligible:
+    value: uncertain
+    reason: >-
+      MIS at NEU is commonly CIP-classified as STEM, but I have not confirmed
+      my specific program's CIP code with the DSO. Per the course guidance,
+      uncertain stays uncertain — the engine must not gate on assumed STEM
+      eligibility.
+    action_owed: email DSO to confirm CIP code before treating STEM as available
+  green_card_path: none in progress
+
+geography:
+  # Q3 — where I can realistically work.
+  primary:
+    - metro: "San Francisco Bay Area, CA"
+      reason: highest density of public, sponsorship-friendly platform/cloud employers (Google, Meta, Apple, Salesforce, NVIDIA, Databricks, etc.)
+  secondary: []
+  remote:
+    accept_remote_only_roles: false
+    reason: >-
+      Sponsorship pipelines for international hires are stronger at companies
+      with on-site presence in the target metro. Remote-only roles are
+      filtered out by default for visa-pipeline reasons, not preference.
+  hard_no_metros: []
+  personal_constraints: none currently binding (no partner relocation, no caregiving)
+
+industry_and_company:
+  # Q4 — sectors and company shape.
+  targeting:
+    - enterprise SaaS / cloud platforms (SAP, Google Cloud, Microsoft Azure, AWS)
+    - AI/ML infrastructure & inference platforms (Databricks, NVIDIA, AMD, Anyscale, vLLM-adjacent shops)
+    - developer tools / DevOps / observability platforms
+  company_size:
+    preferred: public (post-IPO) or late-stage (Series D+)
+    reason: >-
+      H-1B sponsorship history concentrates in public companies that file
+      LCA data with DOL, and in late-stage privates with prior sponsorships.
+      Seed/Series A skip-regardless under the sponsorship gate below.
+  hard_exclusions:
+    - defense / weapons primes (foreign-national restrictions on cleared programs)
+    - crypto-trading / proprietary trading (regulatory + visa volatility)
+  soft_avoidances:
+    - very small consultancies (sponsorship history thin)
+    - pre-seed (no LCA history at all)
+
+sponsorship_requirement:
+  # Q5 — stated explicitly as a gate.
+  required: true
+  gate_behavior: skip-regardless
+  rule: >-
+    Any employer without an H-1B sponsorship history visible in DOL LCA data
+    is a hard skip regardless of fit score, posting freshness, or salary band.
+    This is the gate the engine should enforce, not a preference to weigh.
+  exception: none
+
+privacy:
+  # Anything emotional, comparative, or self-critical lives elsewhere.
+  private_notes_file: search/private-notes.md  # gitignored — never read in scoring
