@@ -1,0 +1,32 @@
+[
+  {
+    "role_id": "micron-memlayout-engineer-soc",
+    "company": "Micron (target) — NOT present in Form D dataset",
+    "title": "Memory IC Layout — full-custom std-cell/module/top P&R, DRC/ERC/LVS to tapeout, Cadence+Calibre [SOC hypothesis 17-2072 Electronics Engineer]",
+    "sponsorship": { "tier": "unknown", "source": "dataset-absent" },
+    "fit": { "p": 0.85, "source": "model-judgment" },
+    "role_quality": { "p": 0.814, "source": "record" },
+    "liveness": { "factor": 1.0, "source": "your-input" },
+    "timeline": { "factor": 0.85, "source": "your-input" }
+  },
+  {
+    "role_id": "micron-memlayout-drafter-soc",
+    "company": "Micron (target) — same posting, drafter classification",
+    "title": "Same posting [SOC hypothesis 17-3012 Electrical/Electronics Drafter]",
+    "sponsorship": { "tier": "unknown", "source": "dataset-absent" },
+    "fit": { "p": 0.85, "source": "model-judgment" },
+    "role_quality": { "p": 0.65, "source": "record" },
+    "liveness": { "factor": 1.0, "source": "your-input" },
+    "timeline": { "factor": 0.85, "source": "your-input" }
+  },
+  {
+    "role_id": "control-private-sponsor-engineer-soc",
+    "company": "Funded fabless startup (Form D-visible, illustrative control)",
+    "title": "Comparable analog/custom layout role [SOC hypothesis 17-2072], employer IS in the dataset",
+    "sponsorship": { "p": 0.9, "tier": "Proven", "source": "record" },
+    "fit": { "p": 0.85, "source": "model-judgment" },
+    "role_quality": { "p": 0.814, "source": "record" },
+    "liveness": { "factor": 1.0, "source": "your-input" },
+    "timeline": { "factor": 0.85, "source": "your-input" }
+  }
+]

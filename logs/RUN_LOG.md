@@ -179,3 +179,13 @@ private emails, or sensitive application notes.
 - **Rebuilt:** `node scripts/build-instructions.mjs --promote` → `AGENTS.md` + `CLAUDE.md` regenerated; `CLAUDE.md` now imports `@SNICKERDOODLE.md`.
 - **Untouched:** `data/` CSVs (real company names containing "mycroft") and prior RUN_LOG history (append-only).
 - **Result:** conformance + doctor green; no stale `MYCROFT.md` outside data/history.
+
+## 2026-06-29 -- case-ic-layout-fit (RUNNABLE-SAMPLE) — IC layout SOC/sponsorship fit
+
+- **Mode:** `recipes/case-ic-layout-fit.md` v0.2.0 · by Zhenhao Ma.
+- **Inputs:** real Micron memory-layout posting; SOC set {17-2061/72/71, 17-3012}; `data/examples/case-ic-layout-roles.json`.
+- **Commands:** `npm run verify`; `grep` SOC compact; `node scripts/score/role-scorer.mjs data/examples/case-ic-layout-roles.json`; scan `data/sec/form-d/processed/`.
+- **Result:** engineer-SOC and drafter-SOC score identically (0.217 = 0.217) — `role_quality` weight 0 hides the SOC trap; Micron drops the sponsorship vote → Consider not Apply (vs 0.484 control). Break: liveness 0 → 0.000 Skip; role_quality 1.0 vs 0.0 → both 0.150.
+- **Gates:** 1 Source ✓ · 2 Scope ✓ · 3 Data-shape ✓ · 4 Script-readiness OPEN (2 scripts [TODO: DEV]) · 5 Approval n/a · 6 Report ✓.
+- **Open:** `scripts/bls/classify-layout-role.py` [TODO: DEV]; `role_quality` weight [TODO: VERIFY]; `scripts/lca/semiconductor-layout-sponsorship.py` [TODO: DEV].
+- **Privacy:** no secrets, no private application data.
