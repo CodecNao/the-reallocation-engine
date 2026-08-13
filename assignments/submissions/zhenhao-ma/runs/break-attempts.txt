@@ -1,0 +1,112 @@
+Break attempts against the scorer behaviour harness
+scorer commit: 3124767 audit: handle tspan wrapping, element+group transforms, filled-node occlusion; whitelist safe glyphs
+node: v24.15.0
+date: 2026-08-13T15:51:47Z
+
+════════════════════════════════════════════════════════════════════
+ATTEMPT 1 — can the harness report a finding from a run that never happened?
+════════════════════════════════════════════════════════════════════
+Damage: make the scorer exit(1) immediately, so it writes no output at all.
+The hazard: runScorer() returns json:null, every composite reads as null, and a
+careless check compares null to null and reports "IDENTICAL — therefore FAIL".
+That would be finding-shaped output with no run behind it.
+
+PASS CONDITION: exit code 2 (harness could not run), NOT exit code 1 (findings).
+
+   promise : Sponsorship weight may be dropped ONLY for candidates who genuinely do not need sponsorship. An F-1/OPT candidate is currently work-authorized AND needs future sponsorship; dropping the sponsorship term for them removes their binding constraint.
+   source  : Ch.11 §profile-conditional weighting
+   · no result — scorer exited 1. Nothing may be concluded from this run. stderr: file:///Users/USER/Developer/the-reallocation-engine/scripts/score/role-scorer.mjs:2
+
+! G5  FAIL  [bug]  No fabricated number on an empty run
+   promise : Scoring an empty role set must not emit a skip rate. A rate computed from zero observations is not a small number; it is not a number.
+   source  : DATA_CONTRACT / _shared.md rule 5 — never invent a rate
+   · no result — scorer exited 1. Nothing may be concluded from this run. stderr: file:///Users/USER/Developer/the-reallocation-engine/scripts/score/role-scorer.mjs:2
+
+──────────────────────────────────────────────────────────────────────────────
+5 checks · 0 PASS · 0 FAIL (0 gating, 0 open questions) · 5 HARNESS ERROR
+wrote output/scorer-harness-results.json
+--> EXIT: 2   (2 = harness refused to report · 1 = it fabricated findings)
+   [scorer restored, verified clean]
+
+════════════════════════════════════════════════════════════════════
+ATTEMPT 2 — can the suite go green while testing nothing? (drift)
+════════════════════════════════════════════════════════════════════
+Damage: rename the field the scorer reads, liveness.factor -> liveness.value.
+The fixture still sets .factor, so the scorer now never sees it and falls back
+to its default of 1.0. This simulates the most likely real-world drift: someone
+renames a field and the tests keep passing against a value never supplied.
+
+PASS CONDITION: G1 FAILS. If G1 still passes, the guard is decoration.
+
+   · closed gate did NOT zero the composite (got 0.49)
+   · closed gate produced recommendation "Apply", expected "Skip"
+   · closed-gate reason does not say it was gated: "composite 0.490 ≥ 0.3, gates healthy"
+   · half-open gate is not multiplicative: 0.49 × 0.5 = 0.2450, got 0.49
+   ⚠ SURPRISE — source reading predicted PASS, observed FAIL. Trust the run, not the prediction.
+
+──────────────────────────────────────────────────────────────────────────────
+1 checks · 0 PASS · 1 FAIL (1 gating, 0 open questions) · 1 surprise(s)
+A gating FAIL is the harness working: it names a promise the scorer does not keep and that has a correct answer.
+wrote output/scorer-harness-results.json
+--> EXIT: 1   (1 = drift was caught · 0 = the guard is blind)
+   [scorer restored, verified clean]
+
+════════════════════════════════════════════════════════════════════
+ATTEMPT 3 — will an unverified posting be recommended? (pre-fix evidence)
+════════════════════════════════════════════════════════════════════
+No damage. This records what the UNPATCHED scorer does with a role for which
+liveness was never measured — the "ghost posting scored live" case.
+Capture this now; the G2 fix removes the behaviour and with it the evidence.
+
+Fixture: no liveness field at all. Nobody ever checked if this job exists.
+
+✓ scored 1 roles → Apply 1 · Consider 0 · Skip 0 (skip 0%)
+  ../../../../tmp/_ba_out.20916/role-scores.json  +  ../../../../tmp/_ba_out.20916/role-scores.md
+
+--- what the scorer decided ---
+composite      : 0.49
+recommendation : Apply
+reason         : composite 0.490 ≥ 0.3, gates healthy
+gates in trace : [{"factor":"liveness","multiplier":1,"source":"record"},{"factor":"timeline","multiplier":1,"source":"your-input"}]
+
+--> If this says Apply, an unverified posting just earned a recommendation,
+    and the audit trace reports liveness 1.0 as though it were measured.
+
+════════════════════════════════════════════════════════════════════
+ATTEMPT 4 — can a gate be demoted to a vote without the guard firing?
+════════════════════════════════════════════════════════════════════
+Damage: change composite = voteSum * gateProduct  to  voteSum + gateProduct*0.1.
+This is the capstone's named build failure: a gate folded in as a weighted
+addend, so a dead posting merely lowers the score instead of zeroing it.
+
+PASS CONDITION: G1 FAILS. This is the exact regression the guard exists for.
+
+90:  const composite = voteSum + gateProduct * 0.1;
+
+   promise : A closed gate zeroes the composite regardless of vote strength, and a half-open gate halves it. A gate folded in as a weighted addend can do neither.
+   source  : Ch.11 §"Why liveness and timeline are multipliers"
+   · closed gate did NOT zero the composite (got 0.49)
+   · half-open gate is not multiplicative: 0.59 × 0.5 = 0.2950, got 0.54
+   ⚠ SURPRISE — source reading predicted PASS, observed FAIL. Trust the run, not the prediction.
+
+──────────────────────────────────────────────────────────────────────────────
+1 checks · 0 PASS · 1 FAIL (1 gating, 0 open questions) · 1 surprise(s)
+A gating FAIL is the harness working: it names a promise the scorer does not keep and that has a correct answer.
+wrote output/scorer-harness-results.json
+--> EXIT: 1   (1 = the guard fired · 0 = the guard is decoration)
+   [scorer restored, verified clean]
+
+════════════════════════════════════════════════════════════════════
+SUMMARY
+════════════════════════════════════════════════════════════════════
+Attempt 1 (fabricated finding)  exit 2  — want 2
+Attempt 2 (silent drift)        exit 1  — want 1
+Attempt 3 (ghost posting)       see the recommendation printed above
+Attempt 4 (gate demoted)        exit 1  — want 1
+
+Final tree state:
+?? assignments/submissions/
+?? output/scorer-harness-results.json
+?? scripts/score/scorer-harness.mjs
+
+If any file above is modified, restoration failed. Do not proceed.

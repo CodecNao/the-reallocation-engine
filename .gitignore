@@ -67,3 +67,4 @@ data/BLS/db_30_2_mysql/
 **/*.resume.pdf
 **/resume.pdf
 resume.json
+output/

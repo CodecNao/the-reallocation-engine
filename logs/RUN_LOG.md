@@ -150,3 +150,44 @@ private emails, or sensitive application notes.
 - **Rebuilt:** `node scripts/build-instructions.mjs --promote` → `AGENTS.md` + `CLAUDE.md` regenerated; `CLAUDE.md` now imports `@SNICKERDOODLE.md`.
 - **Untouched:** `data/` CSVs (real company names containing "mycroft") and prior RUN_LOG history (append-only).
 - **Result:** conformance + doctor green; no stale `MYCROFT.md` outside data/history.
+## 2026-08-13 — Scorer gate & weight behaviour harness
+
+- **Recipe:** case-scorer-harness
+- **Inputs:** `scripts/score/role-scorer.mjs` @ upstream `3124767`; fictional
+  fixtures generated in-process; no file from `data/` read
+- **Outputs:** `scripts/score/scorer-harness.mjs` (new),
+  `output/scorer-harness-results.json` (generated, gitignored),
+  `assignments/submissions/zhenhao-ma/runs/{prefix,break-attempts,postfix}-run.txt`
+- **Result:** Pre-fix 5 checks · 1 PASS · 4 FAIL (3 gating, 1 open question),
+  exit 1. All five outcomes matched the predictions recorded from reading the
+  source — zero surprises. Post-fix 5 checks · 4 PASS · 1 FAIL (0 gating,
+  1 open question), exit 0. `verify` 131 → 132 files conforming, four
+  pre-existing warnings unchanged; `doctor` green throughout; privacy check clean.
+- **Fixes applied:** G2 (a gate with no evidence no longer defaults to 1.0 —
+  returns `Insufficient evidence` and names the missing gate), G4 (nonimmigrant
+  status is decisive over "work authorized" phrasing; explicit
+  `needs_sponsorship` field preferred; text inference now warns), G5 (no skip
+  rate emitted from zero observations). Diff: 1 file, +98 −13.
+- **Break attempts:** four run against the unpatched scorer. Two succeeded, and
+  both found defects in the harness rather than the engine — G4 reported
+  "5 of 5 misclassified" from a scorer stubbed to exit(1) (a fabricated finding),
+  and G5 reported PASS against an empty stdout (silence read as correctness). A
+  third defect surfaced when the G2 fix landed: the check read a legitimately-null
+  composite as "no result". All three fixed — `requireRun()` precondition,
+  `NO RESULT` verdict distinct from `FAIL`, and a G2 criterion that accepts an
+  explicit refusal to score.
+- **Open issues:**
+  - G3 (`role_quality` weight) left failing on purpose. The weight is marked
+    `[VERIFY]` in the scorer and pinned by neither Ch.11 nor the design doc.
+    The harness proves the consequence — two roles differing only in role quality
+    receive identical composites — and proposes no value, because choosing one
+    would mean inventing a constant the record does not contain. Classified
+    `open-question`; does not gate. Run with `--strict` to make it gate.
+  - Fixtures are well-formed by construction. The harness proves the scorer
+    behaves on clean input, not on the malformed records it will actually
+    receive. Largest remaining gap; not closed.
+  - `npm ci` fails on this repository — no `package-lock.json` is committed. Not
+    addressed; neither the scorer nor the harness has dependencies.
+  - `manifest-check` warnings for `reports/generated/`, `archive/`, and
+    `private/` remain. Only `output/` was added to `.gitignore`, because only it
+    is written by this contribution.

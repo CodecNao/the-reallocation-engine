@@ -1,0 +1,54 @@
+3124767 audit: handle tspan wrapping, element+group transforms, filled-node occlusion; whitelist safe glyphs
+v24.15.0
+
+Scorer gate & weight behaviour harness
+target: scripts/score/role-scorer.mjs   node v24.15.0   2026-08-13T16:00:26.993Z
+──────────────────────────────────────────────────────────────────────────────
+
+✓ G1  PASS       [guard]  Gates are multipliers, not votes
+   promise : A closed gate zeroes the composite regardless of vote strength, and a half-open gate halves it. A gate folded in as a weighted addend can do neither.
+   source  : Ch.11 §"Why liveness and timeline are multipliers"
+   · closed gate (liveness 0.0) → composite 0
+   · half-open gate (0.5) scaled 0.49 → 0.245
+
+✓ G2  PASS       [bug]  Absent evidence is not passing evidence
+   promise : A role with NO liveness evidence must not score identically to a role verified live. "Never checked" and "checked and open" are different epistemic states and must not collapse into the same number.
+   source  : Ch.8 (EMPTY vs ERROR) applied at the decision core; Ch.16 Step-4 "a ghost posting scored live"
+   · role with no liveness field  → composite null, recommendation "Insufficient evidence"
+   · role with liveness = 1.0     → composite 0.49
+   · Declined to score — absence of evidence is refused, not defaulted open.
+   · scorer named the missing gate(s): ["liveness"]
+   ⚠ DIFFERS FROM BASELINE — recorded expectation for UNPATCHED upstream was FAIL, observed PASS. Expected if a fix has been applied; otherwise the source reading was wrong. Either way the observation stands, not the prediction.
+
+? G3  FAIL       [open-question]  role_quality reaches the composite
+   promise : Two roles differing only in role_quality must not receive the same composite. If they do, the entire Ch.9 role-quality subsystem is invisible to the decision core.
+   source  : Ch.9 (role quality) feeding Ch.11 (composite)
+   · role_quality 0.9 → composite 0.49
+   · role_quality 0.1 → composite 0.49
+   · role_quality weight as emitted in the audit trace: 0
+   · IDENTICAL — role_quality has no influence on the recommendation.
+
+✓ G4  PASS       [bug]  Work authorization is not confused with sponsorship independence
+   promise : Sponsorship weight may be dropped ONLY for candidates who genuinely do not need sponsorship. An F-1/OPT candidate is currently work-authorized AND needs future sponsorship; dropping the sponsorship term for them removes their binding constraint.
+   source  : Ch.11 §profile-conditional weighting
+   · "F-1 OPT, work authorized" → needs_sponsorship true (expected true), sponsorship weight 0.35 — ok
+   · "F-1 STEM OPT EAD, authorized to work through 2027" → needs_sponsorship true (expected true), sponsorship weight 0.35 — ok
+   · "F-1 student, will need H-1B sponsorship" → needs_sponsorship true (expected true), sponsorship weight 0.35 — ok
+   · "U.S. citizen" → needs_sponsorship false (expected false), sponsorship weight 0 — ok
+   · "Permanent resident" → needs_sponsorship false (expected false), sponsorship weight 0 — ok
+   · 0 of 5 authorization strings misclassified.
+   ⚠ DIFFERS FROM BASELINE — recorded expectation for UNPATCHED upstream was FAIL, observed PASS. Expected if a fix has been applied; otherwise the source reading was wrong. Either way the observation stands, not the prediction.
+
+✓ G5  PASS       [bug]  No fabricated number on an empty run
+   promise : Scoring an empty role set must not emit a skip rate. A rate computed from zero observations is not a small number; it is not a number.
+   source  : DATA_CONTRACT / _shared.md rule 5 — never invent a rate
+   · stdout on empty input: ✓ scored 0 of 0 roles → Apply 0 · Consider 0 · Skip 0 (skip n/a — no roles scored)
+       ../../../../var/folders/8x/3t79g775593f7cxlxjgp58500000gn/T/scorer-harness-2j0zKe/run12-ww6N6u/role-scores.json  +  ../../../../var/folders/8x/3t79g775593f7cxlxjgp58500000gn/T/scorer-harness-2j0zKe/run12-ww6N6u/role-scores.md
+   · No NaN/Infinity emitted on empty input.
+   ⚠ DIFFERS FROM BASELINE — recorded expectation for UNPATCHED upstream was FAIL, observed PASS. Expected if a fix has been applied; otherwise the source reading was wrong. Either way the observation stands, not the prediction.
+
+──────────────────────────────────────────────────────────────────────────────
+5 checks · 4 PASS · 1 FAIL (0 gating, 1 open question) · 3 surprise(s)
+An open question is NOT a bug report. It proves a consequence and hands the decision back to a maintainer. Run with --strict to make these gate too.
+wrote output/scorer-harness-results.json
+EXIT: 0
