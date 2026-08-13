@@ -116,7 +116,7 @@ PRIVACY (no personal data committed)
 Not self-certified by the tooling. Signed by a person who read the archived
 output and confirms it matches what the terminal showed.
 
-Signed: `«FILL: your name»`  Date: `«FILL»`
+Signed: `Zhenhao Ma`  Date: `«FILL»`
 
 ---
 
